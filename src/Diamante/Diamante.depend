@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1389319387 source:c:\users\allan\documents\programacao\eletronica\diamante\src\diamante.x\motor.c
+	"motor.h"
+	<stdio.h>
+
+1389318512 c:\users\allan\documents\programacao\eletronica\diamante\src\diamante.x\motor.h
+
+1389319452 source:c:\users\allan\documents\programacao\eletronica\diamante\src\diamante\main.c
+	<stdio.h>
+	<stdlib.h>
+	"../Diamante.X/motor.h"
+

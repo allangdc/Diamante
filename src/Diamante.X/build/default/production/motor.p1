@@ -1,0 +1,169 @@
+Version 3.2 HI-TECH Software Intermediate Code
+[c E1 0 1 .. ]
+[n E1 . LEFT_MOTOR RIGHT_MOTOR  ]
+[s S1 `E1 1 `uc -> 4 `i `uc 1 `*uc 1 ]
+[n S1 motor type position pos port ]
+[c E5 0 1 .. ]
+[n E5 . BACK_MOTOR FORWARD_MOTOR  ]
+[; ;motor.h: 15: typedef enum
+[; ;motor.h: 16: {
+[; ;motor.h: 17: LEFT_MOTOR,
+[; ;motor.h: 18: RIGHT_MOTOR
+[; ;motor.h: 19: } MOTOR_TYPE;
+[; ;motor.h: 21: typedef enum
+[; ;motor.h: 22: {
+[; ;motor.h: 23: BACK_MOTOR,
+[; ;motor.h: 24: FORWARD_MOTOR
+[; ;motor.h: 25: } MOTOR_DIRECTION;
+[; ;motor.h: 27: typedef struct motor
+[; ;motor.h: 28: {
+[; ;motor.h: 29: MOTOR_TYPE type;
+[; ;motor.h: 30: char position[4];
+[; ;motor.h: 31: char pos;
+[; ;motor.h: 32: unsigned char *port;
+[; ;motor.h: 33: } Motor;
+[; ;motor.h: 35: void Motor_Init(Motor *motor, MOTOR_TYPE id, unsigned char *port);
+[; ;motor.h: 36: void Motor_AddPosition(Motor *motor, char position, char value);
+[; ;motor.h: 37: void Motor_Move(Motor *motor, MOTOR_DIRECTION move);
+"8 motor.c
+[v _Motor_Init `(v ~T0 @X0 1 ef3`*S1`E1`*uc ]
+{
+[; ;motor.c: 7: void Motor_Init(Motor* motor, MOTOR_TYPE id, unsigned char* port)
+[; ;motor.c: 8: {
+[e :U _Motor_Init ]
+[v _motor `*S1 ~T0 @X0 1 r1 ]
+[v _id `E1 ~T0 @X0 1 r2 ]
+[v _port `*uc ~T0 @X0 1 r3 ]
+[f ]
+[; ;motor.c: 9: motor->type = id;
+"9
+[e = . *U _motor 0 _id ]
+[; ;motor.c: 10: motor->port = port;
+"10
+[e = . *U _motor 3 _port ]
+[; ;motor.c: 11: }
+"11
+[e :UE 2 ]
+}
+"14
+[v _Motor_AddPosition `(v ~T0 @X0 1 ef3`*S1`uc`uc ]
+{
+[; ;motor.c: 13: void Motor_AddPosition(Motor* motor, char position, char value)
+[; ;motor.c: 14: {
+[e :U _Motor_AddPosition ]
+[v _motor `*S1 ~T0 @X0 1 r1 ]
+[v _position `uc ~T0 @X0 1 r2 ]
+[v _value `uc ~T0 @X0 1 r3 ]
+[f ]
+[; ;motor.c: 15: motor->position[position] = value;
+"15
+[e = *U + &U . *U _motor 1 * -> _position `ux -> -> # *U &U . *U _motor 1 `ui `ux _value ]
+[; ;motor.c: 16: }
+"16
+[e :UE 3 ]
+}
+"19
+[v _Motor_Move `(v ~T0 @X0 1 ef2`*S1`E5 ]
+{
+[; ;motor.c: 18: void Motor_Move(Motor* motor, MOTOR_DIRECTION move)
+[; ;motor.c: 19: {
+[e :U _Motor_Move ]
+[v _motor `*S1 ~T0 @X0 1 r1 ]
+[v _move `E5 ~T0 @X0 1 r2 ]
+[f ]
+"20
+[v _port `uc ~T0 @X0 1 a ]
+[v _i `uc ~T0 @X0 1 a ]
+[; ;motor.c: 20: unsigned char port, i;
+[; ;motor.c: 21: port = 0;
+"21
+[e = _port -> -> 0 `i `uc ]
+[; ;motor.c: 22: for(i=0; i<4; i++)
+"22
+{
+[e = _i -> -> 0 `i `uc ]
+[e $ < -> _i `i -> 4 `i 5  ]
+[e $U 6  ]
+"23
+[e :U 5 ]
+[; ;motor.c: 23: port |= motor->position[i];
+[e =| _port *U + &U . *U _motor 1 * -> _i `ux -> -> # *U &U . *U _motor 1 `ui `ux ]
+"22
+[e ++ _i -> -> 1 `i `uc ]
+[e $ < -> _i `i -> 4 `i 5  ]
+[e :U 6 ]
+"23
+}
+[; ;motor.c: 24: port = ~port;
+"24
+[e = _port -> ~ -> _port `i `uc ]
+[; ;motor.c: 25: port &= *(motor->port);
+"25
+[e =& _port *U . *U _motor 3 ]
+[; ;motor.c: 26: switch(move)
+"26
+[e $U 9  ]
+[; ;motor.c: 27: {
+"27
+{
+[; ;motor.c: 28: case FORWARD_MOTOR:
+"28
+[e :U 10 ]
+[; ;motor.c: 29: if(motor->pos < 3)
+"29
+[e $ ! < -> . *U _motor 2 `i -> 3 `i 11  ]
+[; ;motor.c: 30: motor->pos++;
+"30
+[e ++ . *U _motor 2 -> -> 1 `i `uc ]
+[e $U 12  ]
+"31
+[e :U 11 ]
+[; ;motor.c: 31: else
+[; ;motor.c: 32: motor->pos = 0;
+"32
+[e = . *U _motor 2 -> -> 0 `i `uc ]
+[e :U 12 ]
+[; ;motor.c: 33: break;
+"33
+[e $U 8  ]
+[; ;motor.c: 34: case BACK_MOTOR:
+"34
+[e :U 13 ]
+[; ;motor.c: 35: if(motor->pos > 0)
+"35
+[e $ ! > -> . *U _motor 2 `i -> 0 `i 14  ]
+[; ;motor.c: 36: motor->pos--;
+"36
+[e -- . *U _motor 2 -> -> 1 `i `uc ]
+[e $U 15  ]
+"37
+[e :U 14 ]
+[; ;motor.c: 37: else
+[; ;motor.c: 38: motor->pos = 3;
+"38
+[e = . *U _motor 2 -> -> 3 `i `uc ]
+[e :U 15 ]
+[; ;motor.c: 39: break;
+"39
+[e $U 8  ]
+"40
+}
+[; ;motor.c: 40: }
+[e $U 8  ]
+"26
+[e :U 9 ]
+[e [\ _move , $ -> . `E5 1 `E5 10
+ , $ -> . `E5 0 `E5 13
+ 8 ]
+"40
+[e :U 8 ]
+[; ;motor.c: 41: port |= motor->position[motor->pos];
+"41
+[e =| _port *U + &U . *U _motor 1 * -> . *U _motor 2 `ux -> -> # *U &U . *U _motor 1 `ui `ux ]
+[; ;motor.c: 42: *(motor->port) = port;
+"42
+[e = *U . *U _motor 3 _port ]
+[; ;motor.c: 43: }
+"43
+[e :UE 4 ]
+}
